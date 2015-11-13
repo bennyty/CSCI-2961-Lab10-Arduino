@@ -70,32 +70,49 @@ void setup() {
     Serial.begin(9600);
     init_LCD();
 }
+
+int time = 0;
+bool timerStarted = false;
+int timeStart = 0;
 void loop() {
     lcd.home();
     String oldString = "";
     String firstLine;
     String secondLine;
 
-    String input = Serial.readString();
-    input.trim();
-    if (input != oldString) {
-        oldString = input;
-        lcd.clear();
-    }
-    int BS = input.indexOf('\\');
-    if (BS != -1) {
-        if (input.length()+2 >= BS && input.substring(BS+1,BS+2) == "n") {
-            firstLine = input.substring(0, BS);
-            secondLine= input.substring(BS + 2 , input.length());
-            lcd.print(firstLine);
-            lcd.setCursor(0, 2);
-            lcd.print(secondLine);
-        } else if (input.length()+2 >= BS && input.substring(BS+1,BS+2) == "t") {
-            int spaceAfterT = input.indexOf(BS, ' ');
-            String nums = input.substring(BS+2, spaceAfterT);
+    if (!timerStarted) {
+        String input = Serial.readString();
+        input.trim();
+        if (input != oldString) {
+            oldString = input;
+            lcd.clear();
+        }
+        int BS = input.indexOf('\\');
+        if (BS != -1) {
+            if (input.length()+2 >= BS && input.substring(BS+1,BS+2) == "n") { //Newlines
+                firstLine = input.substring(0, BS);
+                secondLine= input.substring(BS + 2 , input.length());
+                lcd.print(firstLine);
+                lcd.setCursor(0, 2);
+                lcd.print(secondLine);
+            } else if (input.length()+2 >= BS && input.substring(BS+1,BS+2) == "t") { //Set timer
+                int spaceAfterT = input.indexOf(BS, ' ');
+                time = input.substring(BS+2, spaceAfterT).toInt();
+            } else if (input.length()+2 >= BS && input.substring(BS+1,BS+2) == "s") { //Start timer
+                timerStarted = true;
+                timeStart = millis();
+            } else if (input.length()+2 >= BS && input.substring(BS+1,BS+2) == "x") { //Stop timer
+                timerStarted = false;
+            }
+        } else {
+            lcd.print(input);
         }
     } else {
-        lcd.print(input);
+        int timeDifference = millis() - timeStart;
+        lcd.print("Till: " + time);
+        lcd.print("Curr: " + timeStart);
+        if (timeStart >= time)
+            timerStarted = false;
     }
-    lcd.setCursor(0, 1);
+    /*lcd.setCursor(0, 1);*/
 }
