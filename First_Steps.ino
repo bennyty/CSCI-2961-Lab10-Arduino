@@ -82,13 +82,16 @@ void loop() {
         oldString = input;
         lcd.clear();
     }
-    int NL = input.indexOf('\\');
-    if (NL != -1) {
-        firstLine = input.substring(0, NL);
-        secondLine= input.substring(NL + 1 , input.length());
-        lcd.print(firstLine);
-        lcd.setCursor(0, 2);
-        lcd.print(secondLine);
+    int BS = input.indexOf('\\');
+    if (BS != -1) {
+        if (input.length()+2 >= BS && input.substring(BS+1,BS+2) == "n") {
+            firstLine = input.substring(0, NL);
+            secondLine= input.substring(NL + 1 , input.length());
+            lcd.print(firstLine);
+            lcd.setCursor(0, 2);
+            lcd.print(secondLine);
+        } else if (input.length()+2 >= BS && input.substring(BS+1,BS+2) == "t") {
+        }
     } else {
         lcd.print(input);
     }
