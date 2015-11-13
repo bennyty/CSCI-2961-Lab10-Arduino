@@ -73,11 +73,11 @@ void setup() {
 void loop() {
     lcd.home();
     String oldString = "";
-    String input = Serial.readString();
-    input.trim();
     String firstLine;
     String secondLine;
 
+    String input = Serial.readString();
+    input.trim();
     if (input != oldString) {
         oldString = input;
         lcd.clear();
@@ -85,12 +85,14 @@ void loop() {
     int BS = input.indexOf('\\');
     if (BS != -1) {
         if (input.length()+2 >= BS && input.substring(BS+1,BS+2) == "n") {
-            firstLine = input.substring(0, NL);
-            secondLine= input.substring(NL + 1 , input.length());
+            firstLine = input.substring(0, BS);
+            secondLine= input.substring(BS + 2 , input.length());
             lcd.print(firstLine);
             lcd.setCursor(0, 2);
             lcd.print(secondLine);
         } else if (input.length()+2 >= BS && input.substring(BS+1,BS+2) == "t") {
+            int spaceAfterT = input.indexOf(BS, ' ');
+            String nums = input.substring(BS+2, spaceAfterT);
         }
     } else {
         lcd.print(input);
